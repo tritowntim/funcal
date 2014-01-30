@@ -9,8 +9,8 @@
   []
   (write (p (today)))
   (write (p (birthday)))
-  (write (p (str (.toString (.diff (birthday) (today) "days")) " days!")))
-  (pr-str (write (table (tr (render-week (countdown (birthday)))))))
+  (write (p (str (.toString (+ 1 (.diff (birthday) (today) "days"))) " days!")))
+  (write (table (tr (render-week (countdown (birthday))))))
   (log "end of processing"))
 
 (defn title
