@@ -3,15 +3,14 @@
 
 (enable-console-print!)
 
-(println "Hello world!")
-
 (defn main
   []
   (write (p (today)))
+  (write (p (.week (js/moment))))
   (write (p (birthday)))
+  (write (p (.week (birthday))))
   (write (p (str (.toString (+ 1 (.diff (birthday) (today) "days"))) " days!")))
-  (write (table (tr (render-week (countdown (birthday))))))
-  (log "end of processing"))
+  (write (table (map (fn [week] (render-week (countdown-week (birthday) week))) (range (.week (js/moment)) (+ 1 (.week (birthday)))) ))))
 
 (defn title
   []
@@ -73,6 +72,11 @@
         within? (fn [d] (<= d days-until))]
   (map (fn [n] (.add (today) "days" n)) (take-while within? (iterate inc 0)))))
 
+
+(defn countdown-week
+  [d-day week-number]
+  (filter (fn [x] (= (.week x) week-number)) (countdown d-day)))
+
 ; (.diff d-day (today) "days")
 ; (> d days-until)
 
@@ -94,7 +98,7 @@
 
 (defn render-week
   [dates]
-  (string/join "" (map (fn [x] (td (format x))) dates)))
+  (tr (string/join "" (map (fn [x] (td (format x))) dates))))
 
 (defn write-seq-raw
   [seq]
@@ -106,7 +110,6 @@
 
 (defn write
   [output]
-  (println output)
   (.write js/document output))
 
 (defn log
