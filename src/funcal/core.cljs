@@ -10,7 +10,7 @@
   (write (p (birthday)))
   (write (p (.week (birthday))))
   (write (p (str (.toString (+ 1 (.diff (birthday) (today) "days"))) " days!")))
-  (write (table (map (fn [week] (render-week (countdown-week (birthday) week))) (range (.week (js/moment)) (+ 1 (.week (birthday)))) ))))
+  (write (table (map (fn [week] (render-week (countdown-week-backfill (birthday) week))) (range (.week (js/moment)) (+ 1 (.week (birthday)))) ))))
 
 (defn title
   []
@@ -77,8 +77,12 @@
   [d-day week-number]
   (filter (fn [x] (= (.week x) week-number)) (countdown d-day)))
 
-; (.diff d-day (today) "days")
-; (> d days-until)
+(defn countdown-week-backfill
+  [d-day week-number]
+  (let [the-week (countdown-week d-day week-number)]
+  (flatten (if (= (.day (first the-week)) 0)
+    (conj (repeat (- 7 (count the-week)) nil) the-week)
+    (cons (repeat (- 7 (count the-week)) nil) the-week)))))
 
 (defn weeks
   []
@@ -90,7 +94,7 @@
 
 (defn format
   [day]
-  (.format day "ddd<br>D<br>MMM"))
+  (if day (.format day "ddd<br>D<br>MMM") "<br>"))
 
 (defn format-week
   [week]
